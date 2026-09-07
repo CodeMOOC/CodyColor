@@ -7,34 +7,34 @@ import {
   OnInit,
   signal,
   ViewChild,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { ChatHandlerService } from '../../../services/chat.service';
-import { GameDataService } from '../../../services/game-data.service';
-import { RabbitService } from '../../../services/rabbit.service';
-import { PathService } from '../../../services/path.service';
-import { AudioService } from '../../../services/audio.service';
-import { AuthService } from '../../../services/auth.service';
-import { SessionService } from '../../../services/session.service';
-import { VisibilityService } from '../../../services/visibility.service';
-import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatchGridComponent } from '../../../components/match-grid/match-grid.component';
-import { Cell, EntryPoint, Side, Tile } from '../../../models/cell.model';
-import { Path } from '../../../models/path.model';
-import { Subscription } from 'rxjs';
-import { ModalService } from '../../../services/modal-service.service';
+} from "@angular/core";
+import { Router } from "@angular/router";
+import { ChatHandlerService } from "../../../services/chat.service";
+import { GameDataService } from "../../../services/game-data.service";
+import { RabbitService } from "../../../services/rabbit.service";
+import { PathService } from "../../../services/path.service";
+import { AudioService } from "../../../services/audio.service";
+import { AuthService } from "../../../services/auth.service";
+import { SessionService } from "../../../services/session.service";
+import { VisibilityService } from "../../../services/visibility.service";
+import { CommonModule } from "@angular/common";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { MatchGridComponent } from "../../../components/match-grid/match-grid.component";
+import { Cell, EntryPoint, Side, Tile } from "../../../models/cell.model";
+import { Path } from "../../../models/path.model";
+import { Subscription } from "rxjs";
+import { ModalService } from "../../../services/modal-service.service";
 import {
   Aggregated,
   createDefaultAggregated,
-} from '../../../models/game-data.model';
-import { createDefaultPlayer, Player } from '../../../models/player.model';
-import { CountdownCodyComponent } from '../../../components/countdown-cody/countdown-cody.component';
-import { MatchManagerService } from '../../../services/match-manager.service';
-import { GameLifecycleService } from '../../../services/game-lifecycle.service';
+} from "../../../models/game-data.model";
+import { createDefaultPlayer, Player } from "../../../models/player.model";
+import { CountdownCodyComponent } from "../../../components/countdown-cody/countdown-cody.component";
+import { MatchManagerService } from "../../../services/match-manager.service";
+import { GameLifecycleService } from "../../../services/game-lifecycle.service";
 
 @Component({
-  selector: 'app-royale-match',
+  selector: "app-royale-match",
   imports: [
     MatchGridComponent,
     CommonModule,
@@ -42,8 +42,8 @@ import { GameLifecycleService } from '../../../services/game-lifecycle.service';
     CountdownCodyComponent,
   ],
   standalone: true,
-  templateUrl: './royale-match.component.html',
-  styleUrl: './royale-match.component.scss',
+  templateUrl: "./royale-match.component.html",
+  styleUrl: "./royale-match.component.scss",
 })
 export class RoyaleMatchComponent implements OnInit, OnDestroy {
   private rabbit = inject(RabbitService);
@@ -68,7 +68,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
   // Template-bound fields (formerly $scope)
   userLogged: boolean = false;
-  userNickname: string = '';
+  userNickname: string = "";
   gameTimerValue = signal(0);
   showDraggableRoby = true;
   general: any;
@@ -83,15 +83,15 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
   playerRoby: any;
   enemiesRoby: any;
-  clockAnimation: string = '';
+  clockAnimation: string = "";
 
-  nickname: string = '';
+  nickname: string = "";
   tilesCss: string[][] = [];
   startPositionsCss: string[][] = [];
 
   showCompleteGrid = false;
   showArrows = false;
-  draggableRobyImage = 'roby-idle';
+  draggableRobyImage = "roby-idle";
 
   countdownInProgress = true;
 
@@ -117,8 +117,8 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
   // Timers
   enemyTimerValue = 0;
-  userTimerAnimation = '';
-  enemyTimerAnimation = '';
+  userTimerAnimation = "";
+  enemyTimerAnimation = "";
 
   startAnimation = false;
   currentSide: Side | null = null;
@@ -251,7 +251,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
   private calculateAllStartPositionCss(over = false) {
     this.startPositionsCss = Array.from({ length: 4 }, () =>
-      Array.from({ length: this.cols }, () => '')
+      Array.from({ length: this.cols }, () => "")
     );
 
     for (let side = 0; side < 4; side++) {
@@ -262,19 +262,19 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
   }
 
   private setArrowCss(side: Side, distance: number, over: boolean) {
-    let arrowSide = '';
+    let arrowSide = "";
     switch (side) {
       case Side.Top:
-        arrowSide = 'down';
+        arrowSide = "down";
         break;
       case Side.Left:
-        arrowSide = 'left';
+        arrowSide = "left";
         break;
       case Side.Bottom:
-        arrowSide = 'up';
+        arrowSide = "up";
         break;
       case Side.Right:
-        arrowSide = 'right';
+        arrowSide = "right";
         break;
     }
 
@@ -292,14 +292,14 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
     this.tilesCss = tiles.map((row: string[], x: number) =>
       row.map((cell, y) => {
         switch (cell) {
-          case 'Y':
-            return 'playground--tile-yellow';
-          case 'R':
-            return 'playground--tile-red';
-          case 'G':
-            return 'playground--tile-gray';
+          case "Y":
+            return "playground--tile-yellow";
+          case "R":
+            return "playground--tile-red";
+          case "G":
+            return "playground--tile-gray";
           default:
-            return '';
+            return "";
         }
       })
     );
@@ -327,7 +327,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
       if (this.nextGameTimerValue > 0) {
         if (this.nextGameTimerValue < 10000) {
-          this.clockAnimation = 'clock-ending-animation';
+          this.clockAnimation = "clock-ending-animation";
         }
 
         this.gameTimerValue.set(this.nextGameTimerValue);
@@ -336,7 +336,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
           expected = Date.now() + interval;
           this.gameTimer = setTimeout(step, interval);
         } else {
-          this.clockAnimation = 'clock--end';
+          this.clockAnimation = "clock--end";
         }
       } else {
         if (this.gameTimer) {
@@ -345,7 +345,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
         }
 
         this.gameTimerValue.set(0);
-        this.clockAnimation = 'clock--end';
+        this.clockAnimation = "clock--end";
 
         if (!this.gameData.value.match.positioned) {
           this.isTimeout = true;
@@ -368,13 +368,13 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
   private autoPlacePlayer() {
     const side = -1;
     const distance = -1;
-    this.gameData.update('match', {
+    this.gameData.update("match", {
       positioned: true,
       time: 0,
       startPosition: { side, distance },
     });
 
-    this.gameData.update('userMatchResult', {
+    this.gameData.update("userMatchResult", {
       nickname: this.user.nickname,
       playerId: this.user.playerId,
       time: 0,
@@ -383,7 +383,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
       points: 0,
     });
 
-    this.gameData.update('aggregated', {
+    this.gameData.update("aggregated", {
       positionedPlayers: this.gameData.value.aggregated.positionedPlayers + 1,
     });
 
@@ -400,38 +400,38 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
   // -------------------------------
 
   startDragging() {
-    this.audio.playSound('roby-drag');
+    this.audio.playSound("roby-drag");
     this.showCompleteGrid = true;
-    this.draggableRobyImage = 'roby-dragging-trasp';
+    this.draggableRobyImage = "roby-dragging-trasp";
     this.showArrows = true;
     this.calculateAllStartPositionCss(false);
   }
 
   robyOver(side: number, distance: number) {
-    this.audio.playSound('roby-over');
-    this.draggableRobyImage = 'roby-over';
+    this.audio.playSound("roby-over");
+    this.draggableRobyImage = "roby-over";
     this.setArrowCss(side, distance, true);
   }
 
   robyOut(side: number, distance: number) {
-    this.draggableRobyImage = 'roby-dragging-trasp';
+    this.draggableRobyImage = "roby-dragging-trasp";
     this.setArrowCss(side, distance, false);
   }
 
   endDragging() {
-    this.audio.playSound('roby-drop');
+    this.audio.playSound("roby-drop");
     if (!this.startAnimation) {
       this.showArrows = false;
       this.showCompleteGrid = false;
-      this.draggableRobyImage = 'roby-idle';
+      this.draggableRobyImage = "roby-idle";
       this.calculateAllStartPositionCss(false);
     }
   }
 
   onDragStarted() {
     this.isDragging = true;
-    this.audio.playSound('roby-drag');
-    this.draggableRobyImage = 'roby-dragging-trasp';
+    this.audio.playSound("roby-drag");
+    this.draggableRobyImage = "roby-dragging-trasp";
     this.showArrows = true;
     this.calculateAllStartPositionCss(false);
   }
@@ -449,13 +449,13 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
   }
 
   onTileDropped(sideValue: Side, distanceValue: number) {
-    this.audio.playSound('roby-positioned');
+    this.audio.playSound("roby-positioned");
     this.showArrows = false;
-    this.draggableRobyImage = 'roby-idle';
+    this.draggableRobyImage = "roby-idle";
     this.showDraggableRoby = false;
 
     // Update match
-    this.gameData.update('match', {
+    this.gameData.update("match", {
       positioned: true,
       time: this.nextGameTimerValue,
       startPosition: { side: sideValue, distance: distanceValue },
@@ -464,7 +464,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
     // Compute path
     this.path.computePath(this.gameData.value.match.startPosition);
 
-    this.gameData.update('aggregated', {
+    this.gameData.update("aggregated", {
       positionedPlayers: this.gameData.value.aggregated.positionedPlayers + 1,
     });
 
@@ -476,32 +476,32 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
   private setupRabbitCallbacks() {
     this.rabbit.setPageCallbacks({
       onEnemyPositioned: () => {
-        this.gameData.update('aggregated', {
+        this.gameData.update("aggregated", {
           positionedPlayers:
             this.gameData.value.aggregated.positionedPlayers + 1,
         });
       },
       onPlayerRemoved: (msg: any) => {
         if (msg.removedPlayerId === this.user.playerId) {
-          this.handleEnemyQuit(this.translate.instant('ENEMY_LEFT'));
+          this.handleEnemyQuit(this.translate.instant("ENEMY_LEFT"));
         } else {
-          this.gameData.update('aggregated', msg.aggregated);
+          this.gameData.update("aggregated", msg.aggregated);
         }
       },
 
       onGameQuit: () => {
-        this.handleEnemyQuit(this.translate.instant('ENEMY_LEFT'));
+        this.handleEnemyQuit(this.translate.instant("ENEMY_LEFT"));
       },
 
       onConnectionLost: () => {
-        this.handleEnemyQuit(this.translate.instant('FORCE_EXIT'));
+        this.handleEnemyQuit(this.translate.instant("FORCE_EXIT"));
       },
 
       onStartAnimation: (msg: any) => {
         this.startAnimation = true;
-        this.clockAnimation = 'clock--end';
+        this.clockAnimation = "clock--end";
         // this.gameTimerValue.set(msg.matchTime);
-        this.gameData.update('aggregated', msg.aggregated);
+        this.gameData.update("aggregated", msg.aggregated);
         this.executeAnimation = true;
 
         this.path.positionAllEnemies(msg.startPositions);
@@ -520,13 +520,13 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
       onEndMatch: (msg: any) => {
         // this.matchManager.determineWinner();
-        this.gameData.update('aggregated', msg.aggregated);
-        this.gameData.update('match', { winnerId: msg.winnerId });
-        this.gameData.update('matchRanking', msg.matchRanking);
-        this.gameData.update('globalRanking', msg.globalRanking);
+        this.gameData.update("aggregated", msg.aggregated);
+        this.gameData.update("match", { winnerId: msg.winnerId });
+        this.gameData.update("matchRanking", msg.matchRanking);
+        this.gameData.update("globalRanking", msg.globalRanking);
 
         if (msg.winnerId === this.user.playerId) {
-          this.gameData.update('userMatchResult', {
+          this.gameData.update("userMatchResult", {
             points:
               this.gameData.value.userMatchResult.points +
               this.gameData.calculateWinnerBonusPoints(
@@ -535,7 +535,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
           });
         }
 
-        this.gameData.update('userGlobalResult', {
+        this.gameData.update("userGlobalResult", {
           nickname: this.user.nickname,
           playerId: this.user.playerId,
           points:
@@ -543,8 +543,16 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
             this.gameData.value.userGlobalResult.points,
         });
 
+        console.log("Match ended, navigating to aftermatch page with state:", {
+          msg: msg,
+          matchRanking: msg.matchRanking,
+          globalRanking: msg.globalRanking,
+          userMatchResult: this.gameData.value.userMatchResult,
+          userGlobalResult: this.gameData.value.userGlobalResult,
+          aggregated: msg.aggregated,
+        });
         if (!this.forceExitModal) {
-          this.router.navigate(['/royale-aftermatch'], {
+          this.router.navigate(["/royale-aftermatch"], {
             replaceUrl: true,
             state: {
               matchRanking: msg.matchRanking,
@@ -561,7 +569,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
   skip() {
     this.askedForSkip = true;
-    this.audio.playSound('menu-click');
+    this.audio.playSound("menu-click");
   }
 
   private async handleEnemyQuit(message: string) {
@@ -573,7 +581,7 @@ export class RoyaleMatchComponent implements OnInit, OnDestroy {
 
     this.quitGame();
     await this.modalService.showForceExitModal(message);
-    this.router.navigate(['/home']);
+    this.router.navigate(["/home"]);
   }
 
   formattedStartTimer = computed(() =>

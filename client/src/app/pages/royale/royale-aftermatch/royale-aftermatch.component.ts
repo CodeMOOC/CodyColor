@@ -7,32 +7,32 @@ import {
   OnDestroy,
   OnInit,
   signal,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { ChatHandlerService } from '../../../services/chat.service';
-import { GameDataService } from '../../../services/game-data.service';
-import { RabbitService } from '../../../services/rabbit.service';
-import { AudioService } from '../../../services/audio.service';
-import { AuthService } from '../../../services/auth.service';
-import { SessionService } from '../../../services/session.service';
-import { VisibilityService } from '../../../services/visibility.service';
-import { LanguageService } from '../../../services/language.service';
+} from "@angular/core";
+import { Router } from "@angular/router";
+import { ChatHandlerService } from "../../../services/chat.service";
+import { GameDataService } from "../../../services/game-data.service";
+import { RabbitService } from "../../../services/rabbit.service";
+import { AudioService } from "../../../services/audio.service";
+import { AuthService } from "../../../services/auth.service";
+import { SessionService } from "../../../services/session.service";
+import { VisibilityService } from "../../../services/visibility.service";
+import { LanguageService } from "../../../services/language.service";
 
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ChatComponent } from '../../../components/chat/chat.component';
-import { Player } from '../../../models/player.model';
-import { Subject, takeUntil } from 'rxjs';
-import { ModalService } from '../../../services/modal-service.service';
-import { PathService } from '../../../services/path.service';
-import { MatchManagerService } from '../../../services/match-manager.service';
-import { GameLifecycleService } from '../../../services/game-lifecycle.service';
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { ChatComponent } from "../../../components/chat/chat.component";
+import { Player } from "../../../models/player.model";
+import { Subject, takeUntil } from "rxjs";
+import { ModalService } from "../../../services/modal-service.service";
+import { PathService } from "../../../services/path.service";
+import { MatchManagerService } from "../../../services/match-manager.service";
+import { GameLifecycleService } from "../../../services/game-lifecycle.service";
 
 @Component({
-  selector: 'app-royale-aftermatch',
+  selector: "app-royale-aftermatch",
   imports: [ChatComponent, TranslateModule],
   standalone: true,
-  templateUrl: './royale-aftermatch.component.html',
-  styleUrl: './royale-aftermatch.component.scss',
+  templateUrl: "./royale-aftermatch.component.html",
+  styleUrl: "./royale-aftermatch.component.scss",
 })
 export class RoyaleAftermatchComponent
   implements OnInit, AfterViewInit, OnDestroy
@@ -56,13 +56,13 @@ export class RoyaleAftermatchComponent
 
   // UI state
   userLogged = false;
-  userNickname = '';
+  userNickname = "";
   newMatchTimerValue = 60000;
   newMatchClicked = false;
   enemyRequestNewMatch = false;
   exitGameModal = false;
   forceExitModal = false;
-  forceExitText = '';
+  forceExitText = "";
   languageModal = false;
   basePlaying = false;
 
@@ -73,7 +73,7 @@ export class RoyaleAftermatchComponent
   // --- Game data ---
   user: Player | null = null;
   enemy: Player | null = null;
-  winner: string = '';
+  winner: string = "";
   draw = false;
   matchCount = 0;
   userMatch: any;
@@ -109,13 +109,13 @@ export class RoyaleAftermatchComponent
     const state = history.state;
 
     if (state) {
-      this.matchRanking = state['matchRanking'] || [];
-      this.globalRanking = state['globalRanking'] || [];
-      this.userMatchResult = state['userMatchResult'] || null;
-      this.userGlobalResult = state['userGlobalResult'] || null;
-      this.aggregated = state['aggregated'] || null;
+      this.matchRanking = state["matchRanking"] || [];
+      this.globalRanking = state["globalRanking"] || [];
+      this.userMatchResult = state["userMatchResult"] || null;
+      this.userGlobalResult = state["userGlobalResult"] || null;
+      this.aggregated = state["aggregated"] || null;
     } else {
-      console.warn('Aftermatch - no navigation state received');
+      console.warn("Aftermatch - no navigation state received");
     }
 
     this.initMatchData();
@@ -143,7 +143,7 @@ export class RoyaleAftermatchComponent
         this.enemy = data.enemy;
         this.general = data.general;
         this.draw = data.match.winnerId === -1;
-        this.winner = this.gameData.getMatchWinner()?.nickname ?? '';
+        this.winner = this.gameData.getMatchWinner()?.nickname ?? "";
         this.matchCount = data.aggregated.matchCount;
         this.aggregated = data.aggregated;
 
@@ -155,8 +155,8 @@ export class RoyaleAftermatchComponent
     });
 
     // Play win/lose sounds
-    if (this.winner === this.user?.nickname) this.audio.playSound('win');
-    else if (this.winner === this.enemy?.nickname) this.audio.playSound('lost');
+    if (this.winner === this.user?.nickname) this.audio.playSound("win");
+    else if (this.winner === this.enemy?.nickname) this.audio.playSound("lost");
   }
 
   // countdown
@@ -190,32 +190,34 @@ export class RoyaleAftermatchComponent
   private registerRabbitCallbacks(): void {
     this.rabbit.setPageCallbacks({
       onReadyMessage: (message: any) => {
-        this.gameData.update('aggregated', {
+        this.gameData.update("aggregated", {
           readyPlayers: this.gameData.value.aggregated.readyPlayers + 1,
         });
       },
 
       onStartMatch: (message: any) => {
+        this.gameLifecycle.restartMatch();
+
         this.gameData.initializeMatchData();
-        this.gameData.update('aggregated', message.aggregated);
-        this.gameData.update('match', {
+        this.gameData.update("aggregated", message.aggregated);
+        this.gameData.update("match", {
           tiles: this.gameData.formatMatchTiles(message.tiles),
         });
 
-        this.router.navigate(['/royale-match'], { replaceUrl: true });
+        this.router.navigate(["/royale-match"], { replaceUrl: true });
       },
 
       onGameQuit: () => {
-        this.handleEnemyQuit('ENEMY_LEFT');
+        this.handleEnemyQuit("ENEMY_LEFT");
       },
 
       onConnectionLost: () => {
-        this.handleEnemyQuit('FORCE_EXIT');
+        this.handleEnemyQuit("FORCE_EXIT");
       },
 
       onChatMessage: (message: any) => {
         this.zone.run(() => {
-          this.audio.playSound('roby-over');
+          this.audio.playSound("roby-over");
           this.chatHandler.enqueueChatMessage(message);
           this.chatBubbles.set(this.chatHandler.getChatMessages());
         });
@@ -256,19 +258,17 @@ export class RoyaleAftermatchComponent
   private async handleEnemyQuit(message: string) {
     this.quitGame();
     await this.modalService.showForceExitModal(message);
-    this.router.navigate(['/home']);
+    this.router.navigate(["/home"]);
   }
 
   newMatch(): void {
     this.preventResetOnDestroy = true;
-    this.audio.playSound('menu-click');
-    this.gameData.update('aggregated', {
+    this.audio.playSound("menu-click");
+    this.gameData.update("aggregated", {
       readyPlayers: this.gameData.value.aggregated.readyPlayers + 1,
     });
 
     this.newMatchClicked = true;
-
-    this.gameLifecycle.restartMatch();
 
     this.rabbit.sendReadyMessage();
   }
@@ -277,16 +277,16 @@ export class RoyaleAftermatchComponent
     if (this.isSharing) return;
 
     this.isSharing = true;
-    this.audio.playSound('menu-click');
+    this.audio.playSound("menu-click");
 
     const text = `I took ${this.userMatchResult.pathLength} steps with my Roby in a ${this.general.gameType} match!`;
 
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'CodyColor Multiplayer',
+          title: "CodyColor Multiplayer",
           text,
-          url: 'https://codycolor.codemooc.net',
+          url: "https://codycolor.codemooc.net",
         });
       } else {
         this.sharedLegacy.set(true);
@@ -296,7 +296,7 @@ export class RoyaleAftermatchComponent
       }
     } catch (err) {
       // user cancelled share → not an error
-      console.warn('Share cancelled or failed:', err);
+      console.warn("Share cancelled or failed:", err);
     } finally {
       // Small delay avoids double tap glitch on mobile
       setTimeout(() => {
@@ -306,15 +306,15 @@ export class RoyaleAftermatchComponent
   }
 
   private copyToClipboard(text: string) {
-    const el = document.createElement('textarea');
+    const el = document.createElement("textarea");
     el.value = text;
-    el.setAttribute('readonly', '');
-    el.style.position = 'absolute';
-    el.style.left = '-9999px';
+    el.setAttribute("readonly", "");
+    el.style.position = "absolute";
+    el.style.left = "-9999px";
     document.body.appendChild(el);
 
     el.select();
-    document.execCommand('copy');
+    document.execCommand("copy");
     document.body.removeChild(el);
   }
 }
