@@ -1,0 +1,39 @@
+name: Deploy main
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production server
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: SSH key setup
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/gha_private_key
+        chmod 600 ~/.ssh/gha_private_key
+    - name: SSH fetch commit and setup
+      env:
+        DEPLOY_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_SERVER_USER }}
+        DEPLOY_PORT: ${{ vars.DEPLOY_SERVER_PORT || 22 }}
+        DEPLOY_DIRECTORY: ${{ vars.DEPLOY_DIRECTORY }}
+      run: |
+        ssh -i ~/.ssh/gha_private_key -p ${{ env.DEPLOY_PORT }} -o StrictHostKeyChecking=accept-new ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} << 'ENDSSH'
+        cd ${{ env.DEPLOY_DIRECTORY }}
+        git fetch origin main
+        git checkout main
+        git pull --ff origin main
+        task rebuild
+        ENDSSH
