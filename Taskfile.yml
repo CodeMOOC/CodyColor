@@ -16,6 +16,12 @@ tasks:
       - '{{.DC}} up -d website server'
       - '{{.DC}} ps'
 
+  build:
+    desc: Build and start CodyColor client and server
+    cmds:
+      - '{{.DC}} build website server'
+      - '{{.DC}} up -d'
+
   rebuild:
     desc: Rebuild and restart the CodyColor client and server
     cmds:

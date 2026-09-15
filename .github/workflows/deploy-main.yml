@@ -35,5 +35,5 @@ jobs:
         git fetch origin main
         git checkout main
         git pull --ff origin main
-        task rebuild
+        task build
         ENDSSH
