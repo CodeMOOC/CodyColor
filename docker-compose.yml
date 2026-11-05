@@ -30,12 +30,14 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
+
       # Main router — codycolor.codyroby.it
       - "traefik.http.routers.codycolor-client.rule=Host(`codycolor.codyroby.it`)"
       - "traefik.http.routers.codycolor-client.entrypoints=web,websecure"
       - "traefik.http.routers.codycolor-client.middlewares=codycolor-client-redirectscheme"
       - "traefik.http.middlewares.codycolor-client-redirectscheme.redirectscheme.scheme=https"
       - "traefik.http.middlewares.codycolor-client-redirectscheme.redirectscheme.permanent=true"
+
       # Legacy domain redirect — codycolor.codemooc.net → codycolor.codyroby.it
       - "traefik.http.routers.codycolor-redirect.rule=Host(`codycolor.codemooc.net`)"
       - "traefik.http.routers.codycolor-redirect.entrypoints=web,websecure"
@@ -43,6 +45,23 @@ services:
       - "traefik.http.middlewares.codycolor-legacy-redirect.redirectregex.regex=^https?://codycolor\\.codemooc\\.net/(.*)"
       - "traefik.http.middlewares.codycolor-legacy-redirect.redirectregex.replacement=https://codycolor.codyroby.it/$${1}"
       - "traefik.http.middlewares.codycolor-legacy-redirect.redirectregex.permanent=true"
+
+  legacy-service-worker:
+    image: nginx:alpine
+    networks:
+      - web
+    expose:
+      - "80"
+    volumes:
+      - ./legacy-server/service-worker.js:/usr/share/nginx/html/service-worker.js:ro
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.codycolor-legacy-service-worker.rule=Host(`codycolor.codemooc.net`) && Path(`/service-worker.js`)"
+      - "traefik.http.routers.codycolor-legacy-service-worker.entrypoints=web,websecure"
+      - "traefik.http.routers.codycolor-legacy-service-worker.priority=100"
+      - "traefik.http.services.codycolor-legacy-service-worker.loadbalancer.server.port=80"
 
   rabbit:
     image: beevelop/rabbitmq-stomp
